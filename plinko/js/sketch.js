@@ -70,7 +70,7 @@ function populatePegs(spacing) {
             if (row % 2 == 1)
                 x += spacing / 2;
             let y = spacing + row * spacing;
-            if (y > height - 100 || y < 150) {
+            if (y > height - 100 || y < 100) {
                 continue;
             }
             else {
@@ -149,6 +149,15 @@ function createNewParticle() {
  * 
  * Zach Robinson.
  */
+
+function resetSketch(){
+    removeAllParticles();
+
+    loop();
+    document.querySelector('.defined-groups-wrapper').classList.add('hidden');
+    document.querySelector('#particles-drop').disabled = false;
+    
+}
 function removeAllParticles() {
     for (let i = 0; i < particles.length; i++)
         World.remove(world, particles[i].body);
@@ -298,7 +307,8 @@ function assignPointValuesAndDisplay() {
             }
             if (particles.length -  particlesInGroups === 0) {
                 noLoop();
-                document.querySelector('.defined-groups-wrapper').style.display = 'block';
+                document.querySelector('.defined-groups-wrapper').classList.remove('hidden');   
+                document.querySelector('#particles-drop').disabled = true;
                 const showgroups = new ShowGroups(groups);
                 showgroups.show();
             }
@@ -381,5 +391,5 @@ window['preload'] = preload
 
 window.addEventListener('DOMContentLoaded', (event) => {
     document.querySelector('#particles-drop').addEventListener('click', createNewParticle);
-    document.querySelector('#particles-reset').addEventListener('click', removeAllParticles);
+    document.querySelector('#particles-reset').addEventListener('click', resetSketch);
 });
