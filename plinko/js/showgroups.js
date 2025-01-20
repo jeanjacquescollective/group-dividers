@@ -10,15 +10,15 @@ export default class ShowGroups {
         cardHeader.innerText = `Group ${index + 1}`;
         card.appendChild(cardHeader);
 
-        let cardBody = this.createNameList();
+        let cardBody = this.createNameList(index);
         card.appendChild(cardBody);
 
         return card;
     }
 
-    createNameList() {
+    createNameList(index) {
         let nameList = document.createElement("div");
-        let names = this.data[0].map(member => member.name);
+        let names = this.data[index].map(member => member.name);
         for (let i = 0; i < names.length; i++) {
             let name = names[i];
             let nameCard = this.createNameCard(name, i);
