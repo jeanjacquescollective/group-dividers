@@ -11,20 +11,25 @@
     <a href="./plinko/index.html" class="link">Plinko</a>
 
     <div class="ui">
-        <h2 class="ui__title">Add a Name</h2>
-        <form id="nameForm" class="form form--name">
-            <input type="text" id="nameInput" class="form__input" placeholder="Enter name" required>
-            <button type="submit" class="form__button">Add Name</button>
-        </form>
-
-        <h2 class="ui__title">Name List</h2>
-        <ul id="nameList" class="list list--names"></ul>
-
+        <div class="ui-name-wrapper">
+            <h2 class="ui__title">Add a Name</h2>
+            <form id="nameForm" class="form form--name">
+                <input type="text" id="nameInput" class="form__input" placeholder="Enter name" required>
+                <button type="submit" class="form__button">Add Name</button>
+            </form>
+    
+            <h2 class="ui__title">Name List</h2>
+            <ul id="nameList" class="list list--names"></ul>
+        </div>
+       <div class="ui-group-wrapper">
         <h2 class="ui__title">Number of groups</h2>
         <form id="maxNumberForm" class="form form--max-number">
             <input type="number" id="maxNumberInput" class="form__input" placeholder="Enter number" required>
             <button type="submit" class="form__button">Set Number</button>
         </form>
+       </div>
+
+      
     </div>
 
     <script src="./libraries/ui.js"></script>
