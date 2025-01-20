@@ -1,3 +1,7 @@
+html {
+    overflow: scroll;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e0f7fa;
@@ -9,7 +13,7 @@ body {
     color: #333;
 }
 
-h1{
+h1 {
     color: #00796b;
     text-align: center;
     padding: 1rem;
@@ -51,6 +55,7 @@ h1{
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
+
 }
 
 .ui__title {
@@ -116,10 +121,11 @@ h1{
 }
 
 @media (min-width: 1024px) {
-    .list--names{
+    .list--names {
         gap: 5px;
-       
+
     }
+
     .list--names--item {
         flex-basis: calc(33.333% - 20px);
     }
@@ -154,7 +160,7 @@ h1{
     color: #0056b3;
 }
 
-.game-selection{
+.game-selection {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -166,9 +172,9 @@ h1{
 }
 
 
-.games-wrapper{
+.games-wrapper {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
-}   
+}
