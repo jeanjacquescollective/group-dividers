@@ -39,4 +39,6 @@ function setWorld(worldIn) {
     return world;
 }
 
-export { Engine, World, Bodies, world, particles, pegs, boundaries, particleFrequency, columns, rows, totalScoreId, setWorld, pointZones };
+const wallHeight = 150;
+
+export { Engine, World, Bodies, world, particles, pegs, boundaries, particleFrequency, columns, rows, totalScoreId, setWorld, pointZones, wallHeight };

@@ -44,7 +44,10 @@ class UI {
             names.forEach((name, index) => {
                 const li = document.createElement('li');
                 li.className = 'list--names--item';
-                li.textContent = name;
+                const nameElement = document.createElement('span');
+                nameElement.className = 'list--names--item--name';
+                nameElement.textContent = name;
+                li.appendChild(nameElement);
                 const editButton = document.createElement('button');
                 editButton.className = 'list--names--item--edit';
                 editButton.textContent = 'Edit';
@@ -55,6 +58,11 @@ class UI {
                 removeButton.onclick = () => this.removeName(index);
                 li.appendChild(editButton);
                 li.appendChild(removeButton);
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-container';
+                buttonContainer.appendChild(editButton);
+                buttonContainer.appendChild(removeButton);
+                li.appendChild(buttonContainer);
                 nameList.appendChild(li);
             });
         };

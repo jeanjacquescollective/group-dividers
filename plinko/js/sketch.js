@@ -1,7 +1,7 @@
 import Boundary from './boundary.js';
 import Particle from './particle.js';
 import Peg from './peg.js';
-import { Engine, World, world, particles, pegs, boundaries, particleFrequency, columns, rows, setWorld, pointZones } from './globals.js'
+import { Engine, World, world, particles, pegs, boundaries, particleFrequency, columns, rows, setWorld, pointZones, wallHeight } from './globals.js'
 import ShowGroups from './showgroups.js';
 
 
@@ -22,7 +22,7 @@ function preload() {
     font = loadFont('assets/OpenSans-Bold.ttf');
 }
 
- 
+
 
 /**
  * Sets up the engine, world, gravity, and font properties. Initializes canvas to beginning state.
@@ -70,7 +70,7 @@ function populatePegs(spacing) {
             if (row % 2 == 1)
                 x += spacing / 2;
             let y = spacing + row * spacing;
-            if (y > height - 100 || y < 100) {
+            if (y > height - wallHeight || y < 100) {
                 continue;
             }
             else {
@@ -90,7 +90,7 @@ function populatePegs(spacing) {
  */
 function populatePointZones(spacing) {
     for (let i = 0; i < pointZoneLength; i++) {
-        let h = 150;
+        let h = wallHeight;
         let w = 5;
         let x = i * spacing - w / 2;
         let y = height - h / 2;
@@ -134,7 +134,7 @@ function createNewParticle() {
     groups = Array.from({ length: pointZoneLength }, () => []);
     let names = JSON.parse(localStorage.getItem('names')) || [];
     names.forEach(name => {
-        let p = new Particle(windowWidth/2, 0, 20, name);
+        let p = new Particle(windowWidth / 2, 0, 20, name);
         particles.push(p);
     });
     if (names.length == 0) {
@@ -150,13 +150,13 @@ function createNewParticle() {
  * Zach Robinson.
  */
 
-function resetSketch(){
+function resetSketch() {
     removeAllParticles();
 
     loop();
     document.querySelector('.defined-groups-wrapper').classList.add('hidden');
     document.querySelector('#particles-drop').disabled = false;
-    
+
 }
 function removeAllParticles() {
     for (let i = 0; i < particles.length; i++)
@@ -283,38 +283,44 @@ function assignPointValuesAndDisplay() {
                 groups[zone] = [];
             }
 
-            const maxParticlesPerZone = Math.round(particles.length / pointZoneLength);
+            const maxParticlesPerZone = Math.min(Math.ceil(particles.length / pointZoneLength), Math.min(...groups.map(g => g.length)) + 1);
             const isParticleInZone = groups[zone].some(p => p.id === particle.id);
             const particlesInGroups = groups.reduce((acc, val) => acc + val.length, 0);
+
             if (groups[zone].length > maxParticlesPerZone) {
-                console.log('Too many particles in zone', zone);
-
-                if (groups[zone].length % Math.round(particles.length -  particlesInGroups/ pointZoneLength) === 0 && !isParticleInZone) {
-                    groups[zone].push(particle);
-                } else {
-
-                    let lastParticle = groups[zone].pop();
-                    if (lastParticle) {
-                        let minZone = groups.reduce((acc, val, index) => val.length < groups[acc].length ? index : acc, 0);
-                        console.log('minZone', minZone);
-                        console.log(groups);
-                        let zoneMiddle = minZone * zoneWidth + zoneWidth / 2;
-                        lastParticle.reset(zoneMiddle, 0);
-                    }
-                }
+                handleExcessParticles(zone, isParticleInZone, particlesInGroups, particle);
             } else if (!isParticleInZone) {
                 groups[zone].push(particle);
             }
-            if (particles.length -  particlesInGroups === 0) {
-                noLoop();
-                document.querySelector('.defined-groups-wrapper').classList.remove('hidden');   
-                document.querySelector('#particles-drop').disabled = true;
-                const showgroups = new ShowGroups(groups);
-                showgroups.show();
-            }
 
-            // console.log(groups);
-            // particle.setPointValue(pointZones(xCoord));
+            if (particles.length - particlesInGroups === 0) {
+                finalizeGroups();
+            }
+        }
+
+        function handleExcessParticles(zone, isParticleInZone, particlesInGroups, particle) {
+            console.log('Too many particles in zone', zone);
+            console.log(groups[zone].length % Math.round(particles.length - particlesInGroups / pointZoneLength))
+            if (groups[zone].length % Math.ceil((particles.length - particlesInGroups) / pointZoneLength) === 0 && !isParticleInZone) {
+                groups[zone].push(particle);
+            } else {
+                let lastParticle = groups[zone].pop();
+                if (lastParticle) {
+                    let minZone = groups.reduce((acc, val, index) => val.length < groups[acc].length ? index : acc, 0);
+                    console.log('minZone', minZone);
+                    console.log(groups);
+                    let zoneMiddle = minZone * zoneWidth + zoneWidth / 2;
+                    lastParticle.reset(zoneMiddle, 0);
+                }
+            }
+        }
+
+        function finalizeGroups() {
+            noLoop();
+            document.querySelector('.defined-groups-wrapper').classList.remove('hidden');
+            document.querySelector('#particles-drop').disabled = true;
+            const showgroups = new ShowGroups(groups);
+            showgroups.show();
         }
     }
 

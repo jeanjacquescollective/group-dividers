@@ -34,6 +34,7 @@ export default class Particle {
         let y = 0;
         if (xPos) {
             x = xPos + Math.random() * 50 - 25;
+            
           
         }
         if (yPos) {
