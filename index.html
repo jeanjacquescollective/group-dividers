@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group Dividers</title>
+    <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
     <h1 class="header">Divide your groups now, in a cool way!</h1>
-    <a href="./plinko/index.html" class="link">Plinko</a>
+    <section class="game-selection">
+        <h2 class="ui__title">Select a Game</h2>
+        <div class="games-wrapper">
+            <a href="./plinko/index.html" class="link">Plinko</a>
 
+        </div>
+    </section>
     <div class="ui">
         <div class="ui-name-wrapper">
             <h2 class="ui__title">Add a Name</h2>
@@ -17,22 +25,25 @@
                 <input type="text" id="nameInput" class="form__input" placeholder="Enter name" required>
                 <button type="submit" class="form__button">Add Name</button>
             </form>
-    
+
             <h2 class="ui__title">Name List</h2>
             <ul id="nameList" class="list list--names"></ul>
         </div>
-       <div class="ui-group-wrapper">
-        <h2 class="ui__title">Number of groups</h2>
-        <form id="maxNumberForm" class="form form--max-number">
-            <input type="number" id="maxNumberInput" class="form__input" placeholder="Enter number" required>
-            <button type="submit" class="form__button">Set Number</button>
-        </form>
-       </div>
+        <div class="ui-group-wrapper">
+            <h2 class="ui__title">Number of groups</h2>
+            <form id="maxNumberForm" class="form form--max-number">
+                <input type="number" id="maxNumberInput" class="form__input" placeholder="Enter number" required>
+                <button type="submit" class="form__button">Set Number</button>
+            </form>
+        </div>
 
-      
+
     </div>
+
+
 
     <script src="./libraries/ui.js"></script>
 
 </body>
+
 </html>

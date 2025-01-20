@@ -9,6 +9,12 @@ body {
     color: #333;
 }
 
+h1{
+    color: #00796b;
+    text-align: center;
+    padding: 1rem;
+}
+
 .header {
     margin-top: 20px;
     color: #00796b;
@@ -44,6 +50,7 @@ body {
     box-sizing: border-box;
     display: flex;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .ui__title {
@@ -146,3 +153,22 @@ body {
 .list--names--item--edit:hover {
     color: #0056b3;
 }
+
+.game-selection{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-flow: column;
+    border: solid 1px #ccc;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin: 1rem;
+}
+
+
+.games-wrapper{
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}   
