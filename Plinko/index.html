@@ -1,119 +1,29 @@
-<!-- Zach and Thomas -->
-<html>
-    <head>
-        <meta charset="utf-8">
-        <script language="javascript" type="text/javascript" src="libraries/p5.js"></script>
-        <script language="javascript" type="text/javascript" src="libraries/matter.js"></script>
-        <script language="javascript" type="text/javascript" src="sketch.js"></script>
-        <script language="javascript" type="text/javascript" src="particle.js"></script>
-        <script language="javascript" type="text/javascript" src="peg.js"></script>
-        <script language="javascript" type="text/javascript" src="boundary.js"></script>
-    </head>
-    <body>
-        <h1 style="text-align: center;" id="score">&nbsp;</h1>
-        <button onclick="createNewParticle();">Drop Particle</button>
-        <button onclick="removeAllParticles();">Remove All Particles</button>
-        <h2>Add a Name</h2>
-        <form id="nameForm">
-            <input type="text" id="nameInput" placeholder="Enter name" required>
-            <button type="submit">Add Name</button>
-        </form>
+<!DOCTYPE html>
+<html lang="en">
 
-        <h2>Name List</h2>
-        <ul id="nameList"></ul>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko</title>
+    <script src="../libraries/p5.js"></script>
+    <script src="../libraries/matter.js"></script>
+    <script language="javascript" src="./js/sketch.js" type="module" defer></script>
+    <script src="./js/confetti.js" defer></script>
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
 
-        <h2>Set Maximum Number of Students in a Group</h2>
-        <form id="maxNumberForm">
-            <input type="number" id="maxNumberInput" placeholder="Enter max number" required>
-            <button type="submit">Set Max Number</button>
-        </form>
+<body>
+    <h1 style="text-align: center;" id="score" class="score">&nbsp;</h1>
+    <div class="button-container">
+        <button id="particles-drop" class="particles-drop">Start</button>
+        <button id="particles-reset" class="particles-reset">Reset</button>
+    </div>
+    <div class="defined-groups-wrapper">
+         <canvas id="confetti-canvas" class="overlay confetti"></canvas>
+    <div id="groupList" class="defined-groups"></div>
+    </div>
+   
+</body>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', (event) => {
-
-                const maxNumberInput = document.getElementById('maxNumberInput');
-                const savedMaxNumber = localStorage.getItem('maxNumber');
-                if (savedMaxNumber) {
-                    maxNumberInput.value = savedMaxNumber;
-                }
-                const maxNumberForm = document.getElementById('maxNumberForm');
-
-                // Load max number from localStorage
-                let maxNumber = localStorage.getItem('maxNumber') || '';
-
-                if (maxNumber) {
-                    maxNumberInput.value = maxNumber;
-                }
-
-                maxNumberForm.onsubmit = (event) => {
-                    event.preventDefault();
-                    const maxNumberValue = maxNumberInput.value.trim();
-                    if (maxNumberValue) {
-                        localStorage.setItem('maxNumber', maxNumberValue);
-                        alert('Max number set to ' + maxNumberValue);
-                    }
-                };
-            });
-        </script>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', (event) => {
-                const nameForm = document.getElementById('nameForm');
-                const nameInput = document.getElementById('nameInput');
-                const nameList = document.getElementById('nameList');
-
-                // Load names from localStorage
-                let names = JSON.parse(localStorage.getItem('names')) || [];
-
-                function renderNames() {
-                    nameList.innerHTML = '';
-                    names.forEach((name, index) => {
-                        const li = document.createElement('li');
-                        li.textContent = name;
-                        const editButton = document.createElement('button');
-                        editButton.textContent = 'Edit';
-                        editButton.onclick = () => editName(index);
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remove';
-                        removeButton.onclick = () => removeName(index);
-                        li.appendChild(editButton);
-                        li.appendChild(removeButton);
-                        nameList.appendChild(li);
-                    });
-                }
-
-                function addName(name) {
-                    names.push(name);
-                    localStorage.setItem('names', JSON.stringify(names));
-                    renderNames();
-                }
-
-                function editName(index) {
-                    const newName = prompt('Edit name:', names[index]);
-                    if (newName) {
-                        names[index] = newName;
-                        localStorage.setItem('names', JSON.stringify(names));
-                        renderNames();
-                    }
-                }
-
-                function removeName(index) {
-                    names.splice(index, 1);
-                    localStorage.setItem('names', JSON.stringify(names));
-                    renderNames();
-                }
-
-                nameForm.onsubmit = (event) => {
-                    event.preventDefault();
-                    const name = nameInput.value.trim();
-                    if (name) {
-                        addName(name);
-                        nameInput.value = '';
-                    }
-                };
-
-                renderNames();
-            });
-        </script>
-    </body>
 </html>

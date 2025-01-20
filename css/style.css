@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    margin-top: 20px;
+    color: #333;
+}
+
+.link {
+    margin: 20px 0;
+    text-decoration: none;
+    color: #007BFF;
+    font-size: 18px;
+}
+
+.ui {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+.ui__title {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.form__input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form__button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form__button:hover {
+    background-color: #0056b3;
+}
+
+.list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.list--names {
+    margin: 0;
+}
+
+.list--names--item {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.list--names--item--delete, .list--names--item--edit {
+    margin-left: 10px;
+}
+
+.list--names--item:hover {
+    background-color: #f0f0f0;
+}
+
+
+.list--names--item--delete {
+    float: right;
+    color: #dc3545;
+    cursor: pointer;
+}
+
+.list--names--item--delete:hover {
+    color: #a71d2a;
+}
+
+.list--names--item--edit {
+    float: right;
+    color: #007BFF;
+    cursor: pointer;
+}
+
+.list--names--item--edit:hover {
+    color: #0056b3;
+}

@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Group Dividers</title>
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-    <h1>Divide your groups now, in a cool way!</h1>
-    <a href="./plinko/index.html">Plinko</a>
+    <h1 class="header">Divide your groups now, in a cool way!</h1>
+    <a href="./plinko/index.html" class="link">Plinko</a>
+
+    <div class="ui">
+        <h2 class="ui__title">Add a Name</h2>
+        <form id="nameForm" class="form form--name">
+            <input type="text" id="nameInput" class="form__input" placeholder="Enter name" required>
+            <button type="submit" class="form__button">Add Name</button>
+        </form>
+
+        <h2 class="ui__title">Name List</h2>
+        <ul id="nameList" class="list list--names"></ul>
+
+        <h2 class="ui__title">Set Maximum Number of Students in a Group</h2>
+        <form id="maxNumberForm" class="form form--max-number">
+            <input type="number" id="maxNumberInput" class="form__input" placeholder="Enter max number" required>
+            <button type="submit" class="form__button">Set Max Number</button>
+        </form>
+    </div>
+
+    <script src="./libraries/ui.js"></script>
+
 </body>
 </html>
