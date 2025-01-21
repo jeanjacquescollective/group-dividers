@@ -33,11 +33,13 @@ export default class ShowGroups {
         card.className = "name-card";
 
         let cardHeader = document.createElement("h3");
-        cardHeader.innerText = `Name ${index + 1}`;
+        cardHeader.className = "name-header";
+        cardHeader.innerText = name;
         card.appendChild(cardHeader);
 
         let cardBody = document.createElement("p");
-        cardBody.innerText = name;
+        cardBody.className = "name-body";
+        cardBody.innerText = `${index + 1}`;
         card.appendChild(cardBody);
 
         return card;
