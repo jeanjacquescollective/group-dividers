@@ -5,339 +5,180 @@ import { Engine, World, world, particles, pegs, boundaries, particleFrequency, c
 import ShowGroups from './showgroups.js';
 
 
+class Plinko {
+    constructor() {
+        this.engine = null;
+        this.font = null;
+        this.fontSize = 40;
+        this.pointZoneLength = Object.keys(pointZones).length;
+        this.finalGroups = Array.from({ length: this.pointZoneLength }, () => ({ particles: [], full: false }));
+        this.maxParticlesPerGroup = [];
+        this.height = window.innerHeight;
+        this.threshold = this.height - wallHeight / 2;
+        this.zoneWidth = 0;
+    }
 
-let engine;
-let font,
-    fontSize = 40;
+    preload() {
+        this.font = loadFont('assets/OpenSans-Bold.ttf');
+    }
 
-let pointZoneLength = Object.keys(pointZones).length;
-let groups = Array.from({ length: pointZoneLength }, () => []);
+    setup() {
+        this.engine = Engine.create();
+        let world = setWorld(this.engine.world);
+        world.gravity.y = 1.5;
 
-/**
- * Preloads the font before drawing canvas.
- * 
- * Zach Robinson.
- */
-function preload() {
-    font = loadFont('assets/OpenSans-Bold.ttf');
-}
+        textFont(this.font);
+        textSize(this.fontSize);
+        textAlign(CENTER, CENTER);
 
+        this.initializeCanvas();
+    }
 
+    initializeCanvas() {
+        createCanvas(windowWidth, windowHeight);
+        let spacing = width / columns;
+        this.populatePegs(spacing);
+        this.populateCanvasBoundaries();
+        let pointZoneSpacing = width / this.pointZoneLength;
+        this.populatePointZones(pointZoneSpacing);
+    }
 
-/**
- * Sets up the engine, world, gravity, and font properties. Initializes canvas to beginning state.
- * 
- * Zach Robinson.
- */
-function setup() {
-    engine = Engine.create();
-    let world = setWorld(engine.world);
-    world.gravity.y = 2;
-
-    textFont(font);
-    textSize(fontSize);
-    textAlign(CENTER, CENTER);
-
-    initializeCanvas();
-}
-
-/**
- * Draws the canvas, calculates the spacing to be used when populating the initial static objects.
- * 
- * Zach Robinson.
- */
-function initializeCanvas() {
-    createCanvas(windowWidth, windowHeight);
-    let spacing = width / columns;
-    populatePegs(spacing);
-    populateCanvasBoundaries();
-    let pointZoneSpacing = width / pointZoneLength;
-    populatePointZones(pointZoneSpacing);
-
-}
-
-/**
- * Populates the pegs using a nested for loop. Some manipulation for the spacing
- * of individual rows. Pushes all pegs to the object array designed to hold them.
- * 
- * Zach Robinson.
- */
-function populatePegs(spacing) {
-    let radius = windowWidth / 200;
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < columns; col++) {
-            let x = col * spacing + 12;
-            if (row % 2 == 1)
-                x += spacing / 2;
-            let y = spacing + row * spacing;
-            if (y > height - wallHeight || y < 100) {
-                continue;
+    populatePegs(spacing) {
+        let radius = windowWidth / 200;
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < columns; col++) {
+                let x = col * spacing + 12;
+                if (row % 2 == 1) x += spacing / 2;
+                let y = spacing + row * spacing;
+                if (y > height - wallHeight || y < 100) {
+                    continue;
+                } else {
+                    let p = new Peg(x, y, radius);
+                    pegs.push(p);
+                }
             }
-            else {
-                let p = new Peg(x, y, radius);
-                pegs.push(p);
-            }
-
         }
     }
-}
 
-/**
- * Populates the point zones using a for loop. Pushes all boundary objects
- * to the object array designed to hold them.
- * 
- * Zach Robinson.
- */
-function populatePointZones(spacing) {
-    for (let i = 0; i < pointZoneLength; i++) {
-        let h = wallHeight;
-        let w = 5;
-        let x = i * spacing - w / 2;
-        let y = height - h / 2;
-        let wall = new Boundary(x, y, w, h);
-        boundaries.push(wall);
-    }
-}
-
-/**
- * Populates the canvas boundaries for the canvas. These will prevent the particles
- * from falling off the edges or out from the bottom. Pushes all boundary objects
- * to the array designed to hold them.
- * 
- * Zach Robinson and Thomas Schwartz.
- */
-function populateCanvasBoundaries() {
-    let bottomHeight = 100;
-    let bottomXCoord = width / 2;
-    let bottomYCoord = height + bottomHeight / 2;
-
-    let sideWidth = 50;
-    let leftXCoord = -1 * sideWidth / 2;
-    let rightXCoord = width + sideWidth / 2;
-    let sideYCoord = height / 2;
-
-    let left = new Boundary(leftXCoord, sideYCoord, sideWidth, height);
-    let right = new Boundary(rightXCoord, sideYCoord, sideWidth, height);
-    let bottom = new Boundary(bottomXCoord, bottomYCoord, width, bottomHeight);
-
-    boundaries.push(bottom, left, right);
-}
-
-/**
- * Creates a new particle with default settings and pushes it
- * to the object array designed to hold it.
- * 
- * Zach Robinson.
- */
-function createNewParticle() {
-    particles.length = 0;
-    groups = Array.from({ length: pointZoneLength }, () => []);
-    let names = JSON.parse(localStorage.getItem('names')) || [];
-    names.forEach(name => {
-        let p = new Particle(windowWidth / 2, 0, 20, name);
-        particles.push(p);
-    });
-    if (names.length == 0) {
-        let p = new Particle(300, 0, 12);
-        particles.push(p);
-    }
-}
-
-/**
- * Removes all particles both from the physics engine and the object
- * array used to draw them. 
- * 
- * Zach Robinson.
- */
-
-function resetSketch() {
-    removeAllParticles();
-
-    loop();
-    document.querySelector('.defined-groups-wrapper').classList.add('hidden');
-    document.querySelector('#particles-drop').disabled = false;
-
-}
-function removeAllParticles() {
-    for (let i = 0; i < particles.length; i++)
-        World.remove(world, particles[i].body);
-    particles.splice(0, particles.length);
-}
-
-/**
- * Removes a single particle at a particular count.
- * Used in case a particle falls through the canvas boundaries.
- * 
- * Zach Robinson.
- */
-function removeParticle(counter) {
-    World.remove(world, particles[counter].body);
-    particles.splice(counter, 1);
-}
-
-/**
- * Draws and displays all particles in the object array. Includes a 
- * validation check for if particle is off screen.
- * 
- * Zach Robinson.
- */
-function drawParticles() {
-    for (let i = 0; i < particles.length; i++) {
-        particles[i].show();
-        if (particles[i].isOffScreen())
-            removeParticle(i--);
-    }
-}
-
-/**
- * Draws all pegs in the object array.
- * 
- * Zach Robinson.
- */
-function drawPegs() {
-    for (let i = 0; i < pegs.length; i++) {
-        pegs[i].show();
-    }
-}
-
-/**
- * Draws all boundary objects in the object array.
- * 
- * Zach Robinson.
- */
-function drawBoundaries() {
-    for (let i = 0; i < boundaries.length; i++) {
-        boundaries[i].show();
-    }
-}
-
-/**
- * Draws the labels for any particular point zone on the canvas.
- * Uses a for loop and delta to count forward and backward, so the
- * point values can be adjusted dynamically using global letiables.
- * 
- * Zach Robinson.
- */
-function drawPointLabels() {
-    let point = 1;
-    let delta = 1;
-    let length = pointZoneLength;
-    let yCoord = height - 50;
-    let zoneWidth = width / length;
-    let offset = zoneWidth / 2 - 2;
-
-    for (let i = 0; i < length; i++) {
-        let xCoord = zoneWidth * i + offset;
-        drawLabel(point.toString(), xCoord, yCoord);
-        // if (point == max)
-        //     delta *= -1;
-        point += delta;
+    populatePointZones(spacing) {
+        for (let i = 0; i < this.pointZoneLength; i++) {
+            let h = wallHeight;
+            let w = 5;
+            let x = i * spacing - w / 2;
+            let y = height - h / 2;
+            let wall = new Boundary(x, y, w, h);
+            boundaries.push(wall);
+        }
     }
 
-    /**
-     * Draws a particular point label.
-     * @param {string} value Point value to be associated with label.
-     * @param {number} x X coordinate where label should be drawn.
-     * @param {number} y Y coordinate where label should be drawn.
-     * 
-     * Zach Robinson.
-     */
-    function drawLabel(value, x, y) {
+    populateCanvasBoundaries() {
+        let bottomHeight = 100;
+        let bottomXCoord = width / 2;
+        let bottomYCoord = height + bottomHeight / 2;
+
+        let sideWidth = 50;
+        let leftXCoord = -1 * sideWidth / 2;
+        let rightXCoord = width + sideWidth / 2;
+        let sideYCoord = height / 2;
+
+        let left = new Boundary(leftXCoord, sideYCoord, sideWidth, height);
+        let right = new Boundary(rightXCoord, sideYCoord, sideWidth, height);
+        let bottom = new Boundary(bottomXCoord, bottomYCoord, width, bottomHeight);
+
+        boundaries.push(bottom, left, right);
+    }
+
+    resetGroups() {
+            this.finalGroups = Array.from({ length: this.pointZoneLength }, () => ({
+                particles: [],
+                full: false
+            }));
+            console.log("Groups reset:", this.finalGroups);
+        
+    }
+
+    createNewParticles() {
+        particles.length = 0;
+        let names = JSON.parse(localStorage.getItem('names')) || [];
+        names.forEach(name => {
+            let p = new Particle(windowWidth / 2, 0, 20, name);
+            particles.push(p);
+        });
+        return particles;
+    }
+
+    resetSketch() {
+        this.removeAllParticles();
+        // particles.forEach(particle => World.remove(world, particle.body));
+        document.querySelector('.defined-groups-wrapper').classList.add('hidden');
+        document.querySelector('#particles-drop').disabled = false;
+        this.resetGroups();
+    }
+
+    removeAllParticles() {
+        for (let i = 0; i < particles.length; i++) World.remove(world, particles[i].body);
+        particles.splice(0, particles.length);
+    }
+
+    removeParticle(counter) {
+        World.remove(world, particles[counter].body);
+        particles.splice(counter, 1);
+    }
+
+    drawParticles() {
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].show();
+            if (particles[i].isOffScreen()) this.removeParticle(i--);
+        }
+    }
+
+    drawPegs() {
+        for (let i = 0; i < pegs.length; i++) {
+            pegs[i].show();
+        }
+    }
+
+    drawBoundaries() {
+        for (let i = 0; i < boundaries.length; i++) {
+            boundaries[i].show();
+        }
+    }
+
+    drawPointLabels() {
+        let point = 1;
+        let delta = 1;
+        let length = this.pointZoneLength;
+        let yCoord = height - 50;
+        let zoneWidth = width / length;
+        let offset = zoneWidth / 2 - 2;
+
+        for (let i = 0; i < length; i++) {
+            let xCoord = zoneWidth * i + offset;
+            this.drawLabel(point.toString(), xCoord, yCoord);
+            point += delta;
+        }
+    }
+
+    drawLabel(value, x, y) {
         fill(185);
         stroke(185);
         text(value, x, y);
     }
-}
 
-/**
- * Assigns a point value to the pointValue property of all particle
- * objects in the particles array if it has fallen past the stated threshold.
- * Calculates and displays the sum after assigning values.
- * 
- * Zach Robinson.
- */
-function assignPointValuesAndDisplay() {
-    let threshold = height - 100;   // vertical threshold particles must pass
-    let sum = 0;
-    let zoneWidth = width / pointZoneLength;
-
-    particles.forEach(setParticlePointValue)
-    displaySum();
-
-    /**
-     * Sets the point value of a given Particle object to 
-     * a particular value.
-     * 
-     * Zach Robinson.
-     * 
-     * @param {Object} particle - The particle whose pointValue property will be mutated.
-     * @param {number} particle.pointValue - The point value that this particle has earned.
-     */
-    function setParticlePointValue(particle) {
-        let yCoord = particle.body.position.y;
-        if (yCoord >= threshold) {
-            let xCoord = particle.body.position.x;
-            let zone = pointZones(xCoord) - 1;
-
-            if (!groups[zone]) {
-                groups[zone] = [];
-            }
-
-            const maxParticlesPerZone = Math.min(Math.ceil(particles.length / pointZoneLength), Math.min(...groups.map(g => g.length)) + 1);
-            const isParticleInZone = groups[zone].some(p => p.id === particle.id);
-            const particlesInGroups = groups.reduce((acc, val) => acc + val.length, 0);
-
-            if (groups[zone].length > maxParticlesPerZone) {
-                handleExcessParticles(zone, isParticleInZone, particlesInGroups, particle);
-            } else if (!isParticleInZone) {
-                groups[zone].push(particle);
-            }
-
-            if (particles.length - particlesInGroups === 0) {
-                finalizeGroups();
-            }
+    checkParticles() {
+        if (particles.length === 0) {
+            return;
         }
+        this.zoneWidth = width / this.pointZoneLength;
 
-        function handleExcessParticles(zone, isParticleInZone, particlesInGroups, particle) {
-            console.log('Too many particles in zone', zone);
-            console.log(groups[zone].length % Math.round(particles.length - particlesInGroups / pointZoneLength))
-            if (groups[zone].length % Math.ceil((particles.length - particlesInGroups) / pointZoneLength) === 0 && !isParticleInZone) {
-                groups[zone].push(particle);
-            } else {
-                let lastParticle = groups[zone].pop();
-                if (lastParticle) {
-                    let minZone = groups.reduce((acc, val, index) => val.length < groups[acc].length ? index : acc, 0);
-                    console.log('minZone', minZone);
-                    console.log(groups);
-                    let zoneMiddle = minZone * zoneWidth + zoneWidth / 2;
-                    lastParticle.reset(zoneMiddle, 0);
-                }
-            }
-        }
-
-        function finalizeGroups() {
-            noLoop();
-            document.querySelector('.defined-groups-wrapper').classList.remove('hidden');
-            document.querySelector('#particles-drop').disabled = true;
-            const showgroups = new ShowGroups(groups);
-            showgroups.show();
-        }
+        particles.forEach(this.checkNumberOfParticlesPerGroup.bind(this));
     }
 
-    /**
-     * Calculates and returns the point associated with the latest
-     * Particle that has scored.
-     * 
-     * Zach Robinson.
-     * 
-     * @param {number} xCoord Will be used to calculate the appropriate score.
-     */
-    function pointZones(xCoord) {
+    pointZones(xCoord) {
         let point = 1;
         let delta = 1;
-        let length = pointZoneLength;
-        let max = Math.round(length / 2);
-
+        let length = this.pointZoneLength;
+        let zoneWidth = width / length;
         for (let i = 1; i <= length; i++) {
             let previous = zoneWidth * (i - 1);
             let current = zoneWidth * i;
@@ -349,53 +190,93 @@ function assignPointValuesAndDisplay() {
         return 0;
     }
 
-    /**
-     * Displays the sum of all Particle's pointValues in the particles object array.
-     * 
-     * Zach Robinson.
-     */
-    function displaySum() {
-        particles.forEach(p => sum += p.pointValue);
-        // document.getElementById(totalScoreId).innerHTML = sum;
+    checkNumberOfParticlesPerGroup(particle) {
+        let yCoord = particle.body.position.y;
+        let length = this.pointZoneLength;
+        let zoneWidth = width / length;
+        if (yCoord >= this.threshold) {
+            let xCoord = particle.body.position.x;
+            let zone = this.pointZones(xCoord) - 1;
+
+            for (let z = 0; z < this.finalGroups.length; z++) {
+                const isParticleInZone = this.finalGroups[z].particles.some(p => p.id === particle.id);
+                if (isParticleInZone) {
+                    return;
+                }
+            }
+
+            if (this.finalGroups[zone].full === true) {
+                let minZone = this.finalGroups.reduce((acc, val, index) => val.particles.length < this.finalGroups[acc].particles.length ? index : acc, 0);
+                let zoneMiddle = minZone * zoneWidth + zoneWidth / 2;
+                particle.reset(zoneMiddle, 0);
+                return;
+            }
+            if (this.finalGroups[zone].particles.length + 1 >= this.maxParticlesPerGroup[0]) {
+                this.finalGroups[zone].full = true;
+                this.maxParticlesPerGroup.shift();
+            }
+            this.finalGroups[zone].particles.push(particle);
+            particle.body.restitution = 0.7;
+        }
+    }
+
+    draw() {
+        background(50);
+        Engine.update(this.engine);
+        this.drawPointLabels();
+        this.drawPegs();
+        this.drawParticles();
+        this.drawBoundaries();
+        this.checkParticles();
+
+        const particlesInGroups = this.finalGroups.reduce((acc, val) => acc + val.particles.length, 0);
+        if (particles.length > 0 && particles.length - particlesInGroups === 0) {
+            this.finalizeGroups();
+        }
+    }
+
+    finalizeGroups() {
+        // noLoop();
+        document.querySelector('.defined-groups-wrapper').classList.remove('hidden');
+        document.querySelector('#particles-drop').disabled = true;
+        const showgroups = new ShowGroups(this.finalGroups);
+        showgroups.show();
+    }
+
+    startNewDivision() {
+        // this.removeAllParticles();
+        this.resetGroups();
+        this.createNewParticles();
+        this.maxParticlesPerGroup = this.maxNumberOfParticlesPerGroup(particles, this.finalGroups);
+        loop();
+    }
+
+    maxNumberOfParticlesPerGroup(particles, groups) {
+        const totalParticles = particles.length;
+        const numGroups = groups.length;
+        const baseParticlesPerGroup = Math.floor(totalParticles / numGroups);
+        const leftoverParticles = totalParticles % numGroups;
+
+        return groups.map((group, index) => {
+            const maxParticles = baseParticlesPerGroup + (index < leftoverParticles ? 1 : 0);
+            return maxParticles;
+        });
     }
 }
 
-/**
- * Runs on every frame. Draws all point labels, pegs, particles, and boundary objects.
- * Finally, iterates through all particles to determine current score and displays that
- * score on the web page.
- * 
- * Zach Robinson.
- */
-function draw() {
-    background(50);
-    Engine.update(engine);
-    drawPointLabels();
-    drawPegs();
-    drawParticles();
-    drawBoundaries();
+const plinko = new Plinko();
 
-    assignPointValuesAndDisplay();
-}
+window['setup'] = plinko.setup.bind(plinko);
+window['draw'] = plinko.draw.bind(plinko);
+window['preload'] = plinko.preload.bind(plinko);
 
-/**
- * Spawns particles per frame count rather than on button spawn.
- * Used for testing.
- * 
- * Zach Robinson.
- */
-// function spawnParticles() {
-//     if (frameCount % particleFrequency == 0) {
-//         createNewParticle();
-//     }
-// }
-
-window['setup'] = setup
-window['draw'] = draw
-window['preload'] = preload
-
+// window.addEventListener('resize', () => {
+//     plinko.height = window.innerHeight;
+//     plinko.threshold = plinko.height - wallHeight / 2;
+//     resizeCanvas(windowWidth, windowHeight);
+// });
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    document.querySelector('#particles-drop').addEventListener('click', createNewParticle);
-    document.querySelector('#particles-reset').addEventListener('click', resetSketch);
+    document.querySelector('#particles-drop').addEventListener('click', plinko.startNewDivision.bind(plinko));
+    document.querySelector('#particles-reset').addEventListener('click', plinko.resetSketch.bind(plinko));
 });

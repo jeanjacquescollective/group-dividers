@@ -18,7 +18,7 @@ export default class ShowGroups {
 
     createNameList(index) {
         let nameList = document.createElement("div");
-        let names = this.data[index].map(member => member.name);
+        let names = this.data[index].particles.map(member => member.name);
         for (let i = 0; i < names.length; i++) {
             let name = names[i];
             let nameCard = this.createNameCard(name, i);
